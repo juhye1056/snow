@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import requests
 from env import settings
 from sqlalchemy import Column, create_engine, Integer, String, Float, DateTime
@@ -14,6 +14,9 @@ serviceKey = settings.DATABASE_CONFIG['serviceKey']
 engine = create_engine("mysql+pymysql://{}:{}@{}/{}".format(user, password, host, database), echo=True)
 Session = sessionmaker(bind=engine)
 session = Session()
+
+date_data = datetime.today() - timedelta(1)
+date_str = date_data.strftime("%Y%m%d")
 
 """
 전체 구문에 대해
@@ -61,8 +64,8 @@ class SaveData(object):
             "dataType": "JSON",
             "dataCd": "ASOS",
             "dateCd": "DAY",
-            "startDt": "20100101",
-            "endDt": "20100601",
+            "startDt": date_str,
+            "endDt": date_str,
             "stnIds": "108",
         }
 
@@ -80,7 +83,7 @@ class SaveData(object):
 
             new_entry = SnowData(
                 stnIds=item.get('stnId'),
-                date=datetime.strptime(item.get('tm'), "%Y-%m-%d"),
+                date=date_str,
                 ddMes=ddMes,
                 ddMefs=ddMefs,
                 stnNm=stnNm
